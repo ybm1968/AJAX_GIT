@@ -379,6 +379,7 @@
                 // 수정 중인 다른 댓글 UI 초기화
                 $('.data-box').show()
                 $('.edit-box').empty()
+                $('.reply-box').remove()
 
                 // 댓글 보기 숨김
                 commentBox.find('.data-box').hide()
@@ -405,8 +406,11 @@
 
                 // 댓글 [수정] 취소 버튼 클릭
                 $('#btn-comment-cancel').on('click', function() {
-                    $('.comment-box .data-box').show()
-                    $('.comment-box .edit-box').empty()
+
+                    commentBox.find('.data-box').show()
+                    commentBox.find('.edit-box').empty()
+                    // $('.comment-box .data-box').show()
+                    // $('.comment-box .edit-box').empty()
                 })
 
                 // 댓글 [수정] 수정 버튼 클릭
@@ -482,9 +486,94 @@
             // 댓글 [답글]
             $('.btn-comment').on('click', function() {
 
+                // 댓글 수정 상태를 초기화
+                $('.data-box').show()
+                $('.edit-box').empty()
+
+                // 부모 댓글 번호
+                let parentNo = $(this).attr('data')
+
+                // 답글 작성 UI 추가
+                let replyBox 
+                = `<div class="comment-box reply-box">
+                        <div class="edit-box">
+                            <div class="top">
+                                <div class="item">
+                                    <input type="text" id="input-reply-writer" placeholder="작성자">
+                                </div>
+                                <div class="item">
+                                    
+                                </div>
+                            </div>
+                            <div class="bottom">
+                                <textarea id="input-reply-content" cols="40" rows="5" placeholder="댓글을 입력해주세요"></textarea>
+                                <div class="etc-box">
+                                    <a href="javascript:;" id="btn-reply-insert" class="btn btn-sm">등록</a>
+                                    <a href="javascript:;" id="btn-reply-cancel" class="btn btn-sm">취소</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `
+
+                let btn = $(this)
+                let commentBox = btn.parents('.comment-box')
+                
+                $('.reply-box').remove()                            // 답글 입력 상자 초기화
+
+                commentBox.after( $(replyBox) )
+                let depthMargin = $(commentBox).css('margin-left')  // 답글 계층별 들여쓰기 크기
+                $('.reply-box').css('margin-left', depthMargin)     // 부모댓글 밑에 들여쓰기 해서 답글UI 추가
+
+
+                // 답글 [등록] 버튼 클릭 이벤트
+                $('#btn-reply-insert').on('click', function() {
+
+                    let url = 'http://192.168.30.119:8080/api/comment/reply'
+
+                    let data = {
+                        parentNo : parentNo,                          // 부모 댓글번호
+                        writer : $('#input-reply-writer').val(),     
+                        content : $('#input-reply-content').val(), 
+                    }
+
+                    $.ajax({
+                        url : url,
+                        type : 'POST',
+                        data : data,
+                        success : function(response) {
+                            let result = response
+
+                            if( result == 'SUCCESS' ) {
+                                alert('답글 등록이 완료되었습니다.')
+                                // 댓글 목록 갱신
+                                getCommentList()
+                            }
+                        },
+                        error : function(error) {
+
+                        }
+                    })
+
+                })
+
+
+                // 댓글 [답글] 취소 버튼 클릭 이벤트
+                $('#btn-reply-cancel').on('click', function() {
+                    $('.reply-box').remove()
+                })
+
+
             })
 
         }
+
+
+        
+
+
+
+
 
 
     </script>
