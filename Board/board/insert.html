@@ -113,6 +113,7 @@
             let files = file.files
             // console.log('file ----------------------------');
             // console.log($('#file'));
+            
 
             formData.append('title', title)
             formData.append('writer', writer)
@@ -133,7 +134,7 @@
             let url = 'http://192.168.30.119:8080/api/board'
             $.ajax({
                 url             :   url,
-                type            :   'GET',
+                type            :   'POST',
                 data            :   formData,
                 contentType     :   false,
                 processData     :   false,      // 데이터 컨텐츠 타입 자동 변환 여부
